@@ -1,0 +1,94 @@
+/* Global app styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  color: white;
+}
+
+.app {
+  min-height: 100vh;
+  background: transparent;
+}
+
+/* Products Section */
+.products-section {
+  padding: 80px 20px;
+  text-align: center;
+  background: transparent; /* section transparent so Hero bg shows */
+}
+
+.products-section h2 {
+  color: #5289ff;
+  margin-bottom: 10px;
+}
+
+.products-section p {
+  color: #000000;
+  margin-bottom: 30px;
+}
+
+/* Popup (restored exactly as before) */
+.popup {
+  margin: 30px auto 0 auto; /* centers popup horizontally */
+  background: white;        /* solid white */
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  width: 360px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+  z-index: 10;
+}
+
+.popup img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+.popup h3 {
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+  color: #111827;
+}
+
+.popup p {
+  color: #4b5563;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.popup button {
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.popup button:hover {
+  background: #2563eb;
+}
+
+/* Popup Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+
+
+
+
+
+
+
+
+
+
