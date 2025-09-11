@@ -22,11 +22,12 @@ export default function Header() {
         <style>{`
           header {
             width: 100%;
-            padding: 15px 30px;
+            height: 5%;
+            padding: 18px 35px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(26, 26, 26, 0.85);
+            background: rgba(2, 2, 2, 0.64);
             position: fixed;
             top: 0;
             left: 0;
@@ -39,12 +40,14 @@ export default function Header() {
             align-items: center;
           }
 
-          /* Glow effect slightly lighter than header */
+          /* Bigger logo with glow */
           .logo img {
-            height: 45px;
-            filter: drop-shadow(0 0 6px rgba(32, 32, 32, 0.85))
-                    drop-shadow(0 0 10px rgba(32, 32, 32, 0.85))
-                    drop-shadow(0 0 14px rgba(32, 32, 32, 0.85));
+            height: 50%;     
+            max-height: 35%;
+            width: 20%;         
+            filter: drop-shadow(0 0 6px rgba(20, 0, 204, 0.64))
+                    drop-shadow(0 0 10px rgba(5, 11, 12, 0.85))
+                    drop-shadow(0 0 14px rgba(111, 255, 243, 0.61));
             transition: filter 0.3s ease;
           }
           .logo img:hover {
@@ -68,8 +71,8 @@ export default function Header() {
           nav li.explore:hover { background: #2563eb; }
 
           @media(max-width: 768px) {
-            header { flex-direction: column; padding: 10px 20px; }
-            nav { margin-right: 0; margin-top: 10px; }
+            header { flex-direction: column; padding: 12px 20px; }
+            nav { margin-right: 0; margin-top: 12px; }
             nav ul { flex-direction: column; gap: 10px; }
           }
 
