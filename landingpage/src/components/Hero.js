@@ -2,14 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import productLogo from "../Assets/isp.png";
 
 export default function Hero() {
-  const [showServices, setShowServices] = useState(false);
+  const [showModules, setShowModules] = useState(false);
   const [selectedModule, setSelectedModule] = useState(null);
-  const [descriptionPos, setDescriptionPos] = useState({ top: 0, left: 0 });
-  const [bottomBoxPos, setBottomBoxPos] = useState({ x: 0, y: 0 });
-  const [descKey, setDescKey] = useState(0);
+  const [descPos, setDescPos] = useState({ top: 0, left: 0 });
+  const moduleRefs = useRef([]);
   const cardRef = useRef(null);
 
-  const serviceNames = [
+  const modules = [
     "CRM",
     "PR-069",
     "Radius",
@@ -19,196 +18,259 @@ export default function Hero() {
     "HR Module",
   ];
 
-  const serviceDescriptions = {
-    "CRM": "Streamlines customer interactions, manages leads, and enhances client engagement within ISP 360.",
+  const descriptions = {
+    CRM: "Streamlines customer interactions, manages leads, and enhances client engagement within ISP 360.",
     "PR-069": "Automates device provisioning, monitoring, and customer connectivity workflows efficiently.",
-    "Radius": "Handles authentication and access control for ISP users, ensuring secure and smooth connectivity.",
+    Radius: "Handles authentication and access control for ISP users, ensuring secure and smooth connectivity.",
     "Inventory Management": "Keeps track of ISP equipment, modems, and network assets with real-time updates.",
     "Accounting and Reports": "Generates billing, invoices, and performance reports for accurate financial insights.",
     "Network Monitoring": "Monitors network uptime, traffic, and performance metrics for proactive issue resolution.",
     "HR Module": "Manages employee records, attendance, and payroll operations for smooth HR workflows.",
   };
 
-  const servicePositions = [
-    { x: -600, y: -220 },
-    { x: -600, y: 0 },
-    { x: -600, y: 220 },
-    { x: 350, y: -220 },
-    { x: 350, y: 0 },
-    { x: 350, y: 220 },
-    { x: 0, y: 0 }, // placeholder for HR module
-  ];
+  const [positions, setPositions] = useState([]);
 
-  const moduleRefs = useRef([]);
+  const calculatePositions = () => {
+    const card = cardRef.current;
+    if (!card) return [];
+    const rect = card.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2 + window.scrollX;
+    const centerY = rect.top + rect.height / 2 + window.scrollY;
+
+    if (window.innerWidth > 768) {
+      // Desktop layout
+      return [
+        { x: centerX - 350, y: centerY - 150 },
+        { x: centerX - 350, y: centerY },
+        { x: centerX - 350, y: centerY + 150 },
+        { x: centerX + 350, y: centerY - 150 },
+        { x: centerX + 350, y: centerY },
+        { x: centerX + 350, y: centerY + 150 },
+        { x: centerX, y: centerY + 220 },
+      ];
+    }
+
+    // Mobile positions not used for flex layout
+    return modules.map(() => ({ x: 0, y: 0 }));
+  };
 
   useEffect(() => {
-  if (cardRef.current) {
-    const rect = cardRef.current.getBoundingClientRect();
-    // HR Module bottom box slightly left of center and more bottom
-    setBottomBoxPos({
-      x: -90, // moved further left
-      y: rect.height / 2 + 180,
-    });
-  }
-}, [showServices]);
-
+    setPositions(calculatePositions());
+    const handleResize = () => setPositions(calculatePositions());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (selectedModule !== null) {
-      const index = serviceNames.indexOf(selectedModule);
-      const moduleBox = moduleRefs.current[index];
-      if (moduleBox) {
-        const rect = moduleBox.getBoundingClientRect();
-        setDescriptionPos({
+      const index = modules.indexOf(selectedModule);
+      const modRef = moduleRefs.current[index];
+      if (modRef) {
+        const rect = modRef.getBoundingClientRect();
+        setDescPos({
           top: rect.bottom + window.scrollY + 10,
           left: rect.left + rect.width / 2 + window.scrollX,
         });
-        setDescKey(prev => prev + 1); // trigger animation on each click
       }
     }
-  }, [selectedModule, showServices]);
+  }, [selectedModule, showModules]);
+
+  const handleModuleClick = (module) => {
+    if (selectedModule === module) setSelectedModule(null);
+    else setSelectedModule(module);
+  };
 
   return (
     <section
-      id="home"
-      className="hero"
       style={{
-        background: `radial-gradient(circle at center, rgba(97, 61, 255, 1), rgba(113, 37, 255, 0.98), rgba(53, 0, 243, 0.94))`,
-        position: "relative",
-        height: "90vh",
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
         justifyContent: "center",
-        textAlign: "center",
+        alignItems: "center",
+        position: "relative",
+        background: "radial-gradient(circle at center, #613dff, #7125ff, #3500f3)",
         color: "white",
-        overflow: "visible",
         padding: "20px",
+        textAlign: "center",
+        overflow: "visible",
       }}
     >
-      <style>{`
-        .fade-up { opacity:0; transform:translateY(20px); animation:fadeUp 0.8s forwards; }
-        .fade-up-delay1 { animation-delay:0.3s; }
-        .fade-up-delay2 { animation-delay:0.6s; }
-        .fade-up-delay3 { animation-delay:0.9s; }
-        @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
-
-        .product-card {
-          position: relative;
-          background:linear-gradient(135deg, rgba(234, 251, 255, 1), #e3e4f0ff);
-          color:#111827;
-          padding:25px;
-          border-radius:12px;
-          box-shadow:0 8px 20px rgba(255, 255, 255, 0.99);
-          width:360px;
-          text-align:center;
-          z-index:10;
-          opacity:0;
-          transform:translateY(20px);
-          animation:fadeUp 0.8s forwards;
-          animation-delay:0.9s;
-        }
-
-        .service-box {
-          background: linear-gradient(135deg, #64b4ffff, #592b74ff);
-          border-radius: 15px;
-          box-shadow: 0 6px 20px rgba(255, 255, 255, 1);
-          padding: 16px 22px;
-          text-align: center;
-          min-width: 140px;
-          max-width: 220px;
-          color: #fff;
-          opacity: 0;
-          transform: translate(0,0);
-          transition: all 1s ease-in-out;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-        }
-        .service-box p { margin: 0; font-size:1rem; font-weight:600; letter-spacing:0.5px; line-height:1.3; }
-        .service-box.show { opacity:1; }
-        .service-box:hover { transform: scale(1.1); box-shadow:0 12px 28px rgba(0,0,0,0.4); }
-
-        .module-description {
-          position: absolute;
-          transform: translateX(-50%) translateY(-10px);
-          max-width: 280px;
-          background: rgba(48, 3, 85, 0.6);
-          padding: 15px 20px;
-          border-radius: 12px;
-          font-size: 0.95rem;
-          line-height: 1.4;
-          text-align: center;
-          z-index: 20;
-          opacity: 0;
-          animation: descFade 0.6s forwards;
-        }
-
-        @keyframes descFade {
-          0% { opacity:0; transform:translateX(-50%) translateY(-10px); }
-          50% { transform:translateX(-50%) translateY(-5px); }
-          100% { opacity:1; transform:translateX(-50%) translateY(0); }
-        }
-      `}</style>
-
-      <h1 className="fade-up fade-up-delay1" style={{ marginBottom: "20px" }}>
+      <h1 style={{ fontSize: "2.5rem", marginBottom: "10px", opacity: 1 }}>
         Welcome to Revatix IT Solutions
       </h1>
-      <p className="fade-up fade-up-delay2" style={{ maxWidth: "600px", marginBottom: "30px" }}>
+      <p style={{ maxWidth: "600px", marginBottom: "30px", fontSize: "1.2rem", opacity: 1 }}>
         Empowering businesses with innovation.
       </p>
 
-      <div className="product-card fade-up fade-up-delay3" ref={cardRef}>
-        <img src={productLogo} alt="Product Logo" style={{ width: "100px", height: "100px", marginBottom: "-35px" }} />
-        <h3> Our Product Showcase</h3>
+      {/* Product Card */}
+      <div
+        ref={cardRef}
+        className="product-card"
+        style={{
+          background: "linear-gradient(135deg, #eafbff, #e3e4f0)",
+          color: "#111",
+          padding: "20px",
+          borderRadius: "12px",
+          boxShadow: "0 8px 20px rgba(255,255,255,0.9)",
+          width: "280px",
+          zIndex: 10,
+          textAlign: "center",
+        }}
+      >
+        <img
+          src={productLogo}
+          alt="Product"
+          className="product-img"
+          style={{ width: "80px", height: "80px", marginBottom: "-20px" }}
+        />
+        <h3>Our Product Showcase</h3>
         <p>Discover our innovative IT solutions for modern businesses.</p>
         <button
-          onClick={() => setShowServices(!showServices)}
+          onClick={() => setShowModules(!showModules)}
           style={{
-            padding: "10px 18px",
-            background: "rgba(77, 123, 248, 1)",
-            color: "#ffffffff",
+            marginTop: "10px",
+            padding: "8px 16px",
             border: "none",
             borderRadius: "6px",
+            background: "#4d7bf8",
+            color: "#fff",
             cursor: "pointer",
-            fontWeight: 500,
           }}
         >
           Modules
         </button>
       </div>
 
-      {servicePositions.map((pos, i) => {
-        const isBottom = i === 6;
-        const transformPos = showServices
-          ? isBottom
-            ? `translate(${bottomBoxPos.x}px, ${bottomBoxPos.y}px)` // HR Module
-            : `translate(${pos.x}px, ${pos.y}px)`
-          : `translate(0,0)`;
-
-        return (
-          <div
-            key={i}
-            ref={(el) => (moduleRefs.current[i] = el)}
-            className={`service-box ${showServices ? "show" : ""}`}
-            style={{ position: "absolute", top: "50%", left: "50%", transform: transformPos, zIndex: 15 }}
-            onClick={() => setSelectedModule(serviceNames[i])}
-          >
-            <p>{serviceNames[i]}</p>
-          </div>
-        );
-      })}
-
-      {selectedModule && showServices && (
-        <div
-          key={descKey}
-          className="module-description"
-          style={{ top: descriptionPos.top, left: descriptionPos.left }}
-        >
-          {serviceDescriptions[selectedModule]}
+      {/* Modules */}
+      {showModules && (
+        <div className="modules-container">
+          {positions.map((pos, i) => (
+            <div
+              key={i}
+              ref={(el) => (moduleRefs.current[i] = el)}
+              onClick={() => handleModuleClick(modules[i])}
+              className="module-box"
+              style={{
+                position: "absolute",
+                top: pos.y,
+                left: pos.x,
+                transform: "translate(-50%, -50%) scale(0.5)",
+                opacity: 0,
+                background: "linear-gradient(135deg, #64b4ff, #592b74)",
+                padding: "10px 14px",
+                borderRadius: "12px",
+                textAlign: "center",
+                cursor: "pointer",
+                color: "white",
+                width: "140px",
+                transition: `all 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55) ${i * 0.1}s`,
+              }}
+            >
+              <p style={{ margin: 0, fontWeight: 600 }}>{modules[i]}</p>
+            </div>
+          ))}
         </div>
       )}
+
+      {/* Module Description */}
+      {selectedModule && (
+        <div
+          style={{
+            position: "absolute",
+            top: descPos.top,
+            left: descPos.left,
+            transform: "translateX(-50%)",
+            background: "rgba(48,3,85,0.85)",
+            padding: "10px",
+            borderRadius: "10px",
+            maxWidth: "250px",
+          }}
+        >
+          {descriptions[selectedModule]}
+        </div>
+      )}
+
+      <style>{`
+        .module-box {
+          opacity: 1 !important;
+          transform: translate(-50%, -50%) scale(1) !important;
+        }
+
+        /* Mobile phone layout */
+        @media (max-width: 767px) {
+          h1 { font-size: 1.5rem !important; }
+          p { font-size: 0.9rem !important; }
+          .product-card {
+            width: 160px !important;
+            padding: 12px !important;
+          }
+          .product-card h3 { font-size: 0.9rem !important; margin: 5px 0 !important; }
+          .product-card p { font-size: 0.75rem !important; margin: 5px 0 !important; }
+          .product-img { width: 60px !important; height: 60px !important; margin-bottom: -10px !important; }
+
+          .modules-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 360px;
+            margin: 10px auto 0 auto;
+            position: static !important;
+          }
+
+          .module-box {
+            position: static !important;
+            transform: scale(1) !important;
+            width: 48% !important;
+            margin: 1% !important;
+            font-size: 0.75rem !important;
+            text-align: center;
+          }
+
+          .module-box:nth-child(7) {
+            width: 48% !important;
+            margin: 1% auto !important;
+          }
+        }
+
+        /* iPad Air / tablet layout */
+        @media (min-width: 768px) and (max-width: 1024px) {
+          h1 { font-size: 2rem !important; }
+          p { font-size: 1rem !important; }
+          .product-card {
+            width: 220px !important;
+            padding: 15px !important;
+          }
+          .product-card h3 { font-size: 1.1rem !important; }
+          .product-card p { font-size: 0.9rem !important; }
+          .product-img { width: 70px !important; height: 70px !important; margin-bottom: -15px !important; }
+
+          .modules-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 480px;
+            margin: 15px auto 0 auto;
+            position: static !important;
+          }
+
+          .module-box {
+            position: static !important;
+            transform: scale(1) !important;
+            width: 30% !important;
+            margin: 1% !important;
+            font-size: 0.85rem !important;
+            text-align: center;
+          }
+
+          .module-box:nth-child(7) {
+            width: 30% !important;
+            margin: 1% auto !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

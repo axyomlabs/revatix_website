@@ -1,20 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import productLogo from "../Assets/isp.png";
 import logoImage from "../Assets/logo.png";
 
 export default function Header() {
-  const [showProduct, setShowProduct] = useState(false);
-  const [showContact, setShowContact] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
+  const [popup, setPopup] = useState({ type: null, top: 0, left: 0, visible: false });
+  const buttonsRef = useRef({});
+
+  const handleClick = (type) => {
+    const btn = buttonsRef.current[type];
+    if (!btn) return;
+
+    const rect = btn.getBoundingClientRect();
+    const popupWidth = Math.min(window.innerWidth * 0.85, 300);
+    const popupHeight = 220;
+
+    let left = rect.left + rect.width / 2;
+    left = Math.max(left, popupWidth / 2 + 8);
+    left = Math.min(left, window.innerWidth - popupWidth / 2 - 8);
+
+    let top = rect.bottom + window.scrollY + 8;
+    const maxTop = window.scrollY + window.innerHeight - popupHeight - 8;
+    top = Math.min(top, maxTop);
+
+    setPopup({ type, top, left, visible: true });
+  };
+
+  const closePopup = () => setPopup(prev => ({ ...prev, visible: false }));
 
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
     if (section) section.scrollIntoView({ behavior: "smooth" });
   };
-
-  const toggleProduct = () => setShowProduct(!showProduct);
-  const toggleContact = () => setShowContact(!showContact);
-  const toggleAbout = () => setShowAbout(!showAbout);
 
   return (
     <>
@@ -22,144 +38,152 @@ export default function Header() {
         <style>{`
           header {
             width: 100%;
-            height: 5%;
-            padding: 18px 35px;
+            height: 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(2, 2, 2, 0.64);
+            background: rgba(2,2,2,0.64);
             position: fixed;
             top: 0;
             left: 0;
             z-index: 100;
+            padding: 0 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
           }
 
-          .logo {
+          .logo img { height: clamp(35px,5vw,60px); width:auto; }
+
+          nav {
             display: flex;
+            justify-content: flex-end;
             align-items: center;
+            flex: 1;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-right: 15px;
+          }
+          nav::-webkit-scrollbar { display: none; }
+
+          nav ul {
+            display: flex;
+            gap: clamp(8px, 2vw, 14px);
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            white-space: nowrap;
           }
 
-          /* Bigger logo with glow */
-          .logo img {
-            height: 50%;     
-            max-height: 35%;
-            width: 20%;         
-            filter: drop-shadow(0 0 6px rgba(20, 0, 204, 0.64))
-                    drop-shadow(0 0 10px rgba(5, 11, 12, 0.85))
-                    drop-shadow(0 0 14px rgba(111, 255, 243, 0.61));
-            transition: filter 0.3s ease;
-          }
-          .logo img:hover {
-            filter: drop-shadow(0 0 8px rgba(32, 32, 32, 0.85))
-                    drop-shadow(0 0 12px rgba(32, 32, 32, 0.85))
-                    drop-shadow(0 0 16px rgba(32, 32, 32, 0.85));
-          }
-
-          nav { display: flex; align-items: center; margin-right: 50px; }
-          nav ul { list-style: none; display: flex; gap: 25px; margin: 0; padding: 0; }
           nav li {
-            cursor: pointer; color: white; font-weight: 500;
-            transition: color 0.3s ease; padding: 5px 10px;
-            border-radius: 5px; text-align: center; white-space: nowrap;
+            cursor: pointer;
+            color: white;
+            font-weight: 500;
+            font-size: clamp(10px, 1.8vw, 14px);
+            padding: 4px 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
           }
+
           nav li:hover { color: #f59e0b; background: rgba(255,255,255,0.1); }
+
           nav li.explore {
-            background: #3b82f6; color: #fff; font-weight: 600;
-            padding: 6px 14px; border-radius: 8px;
+            background: #3b82f6;
+            color: #fff;
+            font-weight: 600;
+            padding: 3px 6px;
+            min-width: 60px;
+            flex-shrink: 0;
+            margin-left: 4px;
+            text-align: center;
           }
           nav li.explore:hover { background: #2563eb; }
 
-          @media(max-width: 768px) {
-            header { flex-direction: column; padding: 12px 20px; }
-            nav { margin-right: 0; margin-top: 12px; }
-            nav ul { flex-direction: column; gap: 10px; }
-          }
-
           .popup {
-            margin: 100px auto 0 auto;
+            position: fixed;
+            transform: translateX(-50%) translateY(-10px);
+            opacity: 0;
             background: white;
-            padding: 25px;
+            padding: clamp(12px,3vw,20px);
+            width: clamp(220px,85%,300px);
+            max-height: 80vh;
+            overflow-y: auto;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            width: 360px;
+            z-index: 200;
             text-align: center;
-            position: relative;
-            animation: fadeIn 0.3s ease-in-out;
+            transition: all 0.35s ease;
           }
 
-          .popup img { width: 80px; height: 80px; margin-bottom: 15px; }
-          .popup h3 { margin-bottom: 10px; font-size: 1.3rem; color: #111827; }
-          .popup p { color: #4b5563; font-size: 1rem; margin-bottom: 15px; }
+          .popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+          .popup img { width: clamp(50px,15vw,70px); height: clamp(50px,15vw,70px); margin-bottom: 12px; }
+          .popup h3 { font-size: clamp(1rem,3.5vw,1.2rem); margin-bottom: 8px; color:#111827; }
+          .popup p { font-size: clamp(0.8rem,2.5vw,0.95rem); margin-bottom: 6px; color:#4b5563; }
 
           .close-btn {
             position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.4rem;
-            font-weight: bold;
+            top: 8px;
+            right: 10px;
+            font-size: 1.3rem;
             color: red;
-            background: transparent;
             border: none;
+            background: transparent;
             cursor: pointer;
-            transition: color 0.2s ease;
           }
-          .close-btn:hover { color: #f59e0b; }
 
-          @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+          @media (max-width: 480px) {
+            nav li { font-size: 10px; padding: 2px 4px; }
+            nav li.explore { 
+              padding: 2px 5px; 
+              font-size: 9px; 
+              min-width: 50px; 
+              margin-left: 2px; 
+            }
           }
         `}</style>
 
-        {/* Logo */}
         <div className="logo">
-          <img src={logoImage} alt="Company Logo" />
+          <img src={logoImage} alt="Logo"/>
         </div>
 
-        {/* Navigation */}
         <nav>
           <ul>
-            <li onClick={() => scrollToSection("home")}>Home</li>
-            <li onClick={() => scrollToSection("services")}>Services</li>
-            <li onClick={toggleAbout}>About</li>
-            <li onClick={toggleContact}>Contact</li>
-            <li className="explore" onClick={toggleProduct}>Explore</li>
+            <li ref={el => buttonsRef.current.home = el} onClick={() => scrollToSection("home")}>Home</li>
+            <li ref={el => buttonsRef.current.services = el} onClick={() => scrollToSection("services")}>Services</li>
+            <li ref={el => buttonsRef.current.about = el} onClick={() => handleClick("about")}>About</li>
+            <li ref={el => buttonsRef.current.contact = el} onClick={() => handleClick("contact")}>Contact</li>
+            <li ref={el => buttonsRef.current.explore = el} className="explore" onClick={() => handleClick("explore")}>Explore</li>
           </ul>
         </nav>
       </header>
 
-      {/* Popups */}
-      <div style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 200 }}>
-        {showProduct && (
-          <div className="popup">
-            <button className="close-btn" onClick={toggleProduct}>×</button>
-            <img src={productLogo} alt="Product Logo" />
+      {popup.type && (
+        <div
+          className={`popup ${popup.visible ? "show" : ""}`}
+          style={{ top: popup.top + "px", left: popup.left + "px" }}
+        >
+          <button className="close-btn" onClick={closePopup}>×</button>
+
+          {popup.type === "explore" && <>
+            <img src={productLogo} alt="Product"/>
             <h3>🚀 Product Showcase</h3>
             <p>Explore our cutting-edge IT solutions for modern businesses.</p>
-          </div>
-        )}
+          </>}
 
-        {showContact && (
-          <div className="popup">
-            <button className="close-btn" onClick={toggleContact}>×</button>
-            <h3>📞 Contact Us</h3>
-            <p>Phone: +91 99251 32277</p>
-            <p>Email: info@revatix.com</p>
-            <p>Address: Bhuj</p>
-          </div>
-        )}
-
-        {showAbout && (
-          <div className="popup">
-            <button className="close-btn" onClick={toggleAbout}>×</button>
+          {popup.type === "about" && <>
             <h3>ℹ️ About Us</h3>
             <p>Revatix Solutions is a leading provider of innovative IT services.</p>
             <p>We specialize in enterprise software development.</p>
             <p>Our mission is to empower businesses with cutting-edge technology.</p>
-          </div>
-        )}
-      </div>
+          </>}
+
+          {popup.type === "contact" && <>
+            <h3>📞 Contact Us</h3>
+            <p>Phone: +91 99251 32277</p>
+            <p>Email: info@revatix.com</p>
+            <p>Address: Bhuj</p>
+          </>}
+        </div>
+      )}
     </>
   );
 }
