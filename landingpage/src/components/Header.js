@@ -1,31 +1,15 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import productLogo from "../Assets/isp.png";
 import logoImage from "../Assets/logo.png";
 
 export default function Header() {
-  const [popup, setPopup] = useState({ type: null, top: 0, left: 0, visible: false });
-  const buttonsRef = useRef({});
+  const [popup, setPopup] = useState({ type: null, visible: false });
 
   const handleClick = (type) => {
-    const btn = buttonsRef.current[type];
-    if (!btn) return;
-
-    const rect = btn.getBoundingClientRect();
-    const popupWidth = Math.min(window.innerWidth * 0.85, 300);
-    const popupHeight = 220;
-
-    let left = rect.left + rect.width / 2;
-    left = Math.max(left, popupWidth / 2 + 8);
-    left = Math.min(left, window.innerWidth - popupWidth / 2 - 8);
-
-    let top = rect.bottom + window.scrollY + 8;
-    const maxTop = window.scrollY + window.innerHeight - popupHeight - 8;
-    top = Math.min(top, maxTop);
-
-    setPopup({ type, top, left, visible: true });
+    setPopup({ type, visible: true });
   };
 
-  const closePopup = () => setPopup(prev => ({ ...prev, visible: false }));
+  const closePopup = () => setPopup({ type: null, visible: false });
 
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
@@ -51,7 +35,11 @@ export default function Header() {
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
           }
 
-          .logo img { height: clamp(35px,5vw,60px); width:auto; }
+          .logo img { 
+            width: clamp(120px, 15vw, 180px);
+            height: clamp(160px, 9vw, 100px);
+            object-fit: contain;
+          }
 
           nav {
             display: flex;
@@ -97,37 +85,65 @@ export default function Header() {
           }
           nav li.explore:hover { background: #2563eb; }
 
-          .popup {
+          /* Full-page popup overlay */
+          .popup-overlay {
             position: fixed;
-            transform: translateX(-50%) translateY(-10px);
-            opacity: 0;
-            background: white;
-            padding: clamp(12px,3vw,20px);
-            width: clamp(220px,85%,300px);
-            max-height: 80vh;
-            overflow-y: auto;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             z-index: 200;
-            text-align: center;
-            transition: all 0.35s ease;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+          }
+          .popup-overlay.show {
+            opacity: 1;
+            pointer-events: all;
           }
 
-          .popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+          .popup {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+          }
 
-          .popup img { width: clamp(50px,15vw,70px); height: clamp(50px,15vw,70px); margin-bottom: 12px; }
-          .popup h3 { font-size: clamp(1rem,3.5vw,1.2rem); margin-bottom: 8px; color:#111827; }
-          .popup p { font-size: clamp(0.8rem,2.5vw,0.95rem); margin-bottom: 6px; color:#4b5563; }
+          .popup img { width: clamp(50px,15vw,70px); height: clamp(50px,15vw,70px); margin-bottom: 14px; }
+          .popup h3 { font-size: 1.2rem; margin-bottom: 10px; color:#111827; }
+          .popup p { margin-bottom: 8px; color:#4b5563; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
           .close-btn {
             position: absolute;
-            top: 8px;
-            right: 10px;
-            font-size: 1.3rem;
+            top: 10px;
+            right: 12px;
+            font-size: 1.4rem;
             color: red;
             border: none;
             background: transparent;
             cursor: pointer;
+          }
+
+          .whatsapp-link {
+            color: #25D366;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
           }
 
           @media (max-width: 480px) {
@@ -147,41 +163,56 @@ export default function Header() {
 
         <nav>
           <ul>
-            <li ref={el => buttonsRef.current.home = el} onClick={() => scrollToSection("home")}>Home</li>
-            <li ref={el => buttonsRef.current.services = el} onClick={() => scrollToSection("services")}>Services</li>
-            <li ref={el => buttonsRef.current.about = el} onClick={() => handleClick("about")}>About</li>
-            <li ref={el => buttonsRef.current.contact = el} onClick={() => handleClick("contact")}>Contact</li>
-            <li ref={el => buttonsRef.current.explore = el} className="explore" onClick={() => handleClick("explore")}>Explore</li>
+            <li onClick={() => scrollToSection("home")}>Home</li>
+            <li onClick={() => scrollToSection("services")}>Services</li>
+            <li onClick={() => handleClick("about")}>About</li>
+            <li onClick={() => handleClick("contact")}>Contact</li>
+            <li className="explore" onClick={() => handleClick("explore")}>Explore</li>
           </ul>
         </nav>
       </header>
 
+      {/* Full-page overlay popup */}
       {popup.type && (
-        <div
-          className={`popup ${popup.visible ? "show" : ""}`}
-          style={{ top: popup.top + "px", left: popup.left + "px" }}
-        >
-          <button className="close-btn" onClick={closePopup}>×</button>
+        <div className={`popup-overlay ${popup.visible ? "show" : ""}`} onClick={closePopup}>
+          <div className="popup" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={closePopup}>×</button>
 
-          {popup.type === "explore" && <>
-            <img src={productLogo} alt="Product"/>
-            <h3>🚀 Product Showcase</h3>
-            <p>Explore our cutting-edge IT solutions for modern businesses.</p>
-          </>}
+            {popup.type === "explore" && <>
+              <img src={productLogo} alt="Product"/>
+              <h3>🚀 Product Showcase</h3>
+              <p>Explore our cutting-edge IT solutions for modern businesses.</p>
+            </>}
 
-          {popup.type === "about" && <>
-            <h3>ℹ️ About Us</h3>
-            <p>Revatix Solutions is a leading provider of innovative IT services.</p>
-            <p>We specialize in enterprise software development.</p>
-            <p>Our mission is to empower businesses with cutting-edge technology.</p>
-          </>}
+            {popup.type === "about" && <>
+              <h3>ℹ️ About Us</h3>
+              <p>Revatix Solutions is a leading provider of innovative IT services.</p>
+              <p>We specialize in enterprise software development.</p>
+              <p>Our mission is to empower businesses with cutting-edge technology.</p>
+            </>}
 
-          {popup.type === "contact" && <>
-            <h3>📞 Contact Us</h3>
-            <p>Phone: +91 99251 32277</p>
-            <p>Email: info@revatix.com</p>
-            <p>Address: Bhuj</p>
-          </>}
+            {popup.type === "contact" && <>
+              <h3>📞 Contact Us</h3>
+              <p>Phone: +91 99251 32277</p>
+              <p>Email: info@revatix.com</p>
+              <p>Address: Bhuj</p>
+              <p>
+                <a 
+                  href="https://wa.me/919925132277" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="whatsapp-link"
+                >
+                  <img 
+                    src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+                    alt="WhatsApp" 
+                    style={{ width: "30px", height: "30px" }}
+                  />
+                  <span style={{ marginTop: "-10px" }}>WhatsApp</span>
+                </a>
+              </p>
+            </>}
+          </div>
         </div>
       )}
     </>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import productLogo from "../Assets/isp.png";
 
 export default function Hero() {
@@ -9,27 +9,33 @@ export default function Hero() {
   const cardRef = useRef(null);
   const [positions, setPositions] = useState([]);
 
-  const modules = [
-    "CRM",
-    "PR-069",
-    "Radius",
-    "Inventory Management",
-    "Accounting and Reports",
-    "Network Monitoring",
-    "HR Module",
-  ];
+  const modules = useMemo(
+    () => [
+      "CRM",
+      "PR-069",
+      "Radius",
+      "Inventory Management",
+      "Accounting and Reports",
+      "Network Monitoring",
+      "HR Module",
+    ],
+    []
+  );
 
-  const descriptions = {
-    CRM: "Streamlines customer interactions, manages leads, and enhances client engagement within ISP 360.",
-    "PR-069": "Automates device provisioning, monitoring, and customer connectivity workflows efficiently.",
-    Radius: "Handles authentication and access control for ISP users, ensuring secure and smooth connectivity.",
-    "Inventory Management": "Keeps track of ISP equipment, modems, and network assets with real-time updates.",
-    "Accounting and Reports": "Generates billing, invoices, and performance reports for accurate financial insights.",
-    "Network Monitoring": "Monitors network uptime, traffic, and performance metrics for proactive issue resolution.",
-    "HR Module": "Manages employee records, attendance, and payroll operations for smooth HR workflows.",
-  };
+  const descriptions = useMemo(
+    () => ({
+      CRM: "Streamlines customer interactions, manages leads, and enhances client engagement within ISP 360.",
+      "PR-069": "Automates device provisioning, monitoring, and customer connectivity workflows efficiently.",
+      Radius: "Handles authentication and access control for ISP users, ensuring secure and smooth connectivity.",
+      "Inventory Management": "Keeps track of ISP equipment, modems, and network assets with real-time updates.",
+      "Accounting and Reports": "Generates billing, invoices, and performance reports for accurate financial insights.",
+      "Network Monitoring": "Monitors network uptime, traffic, and performance metrics for proactive issue resolution.",
+      "HR Module": "Manages employee records, attendance, and payroll operations for smooth HR workflows.",
+    }),
+    []
+  );
 
-  const calculatePositions = () => {
+  const calculatePositions = useCallback(() => {
     const card = cardRef.current;
     if (!card) return [];
     const rect = card.getBoundingClientRect();
@@ -48,14 +54,14 @@ export default function Hero() {
       ];
     }
     return modules.map(() => ({ x: 0, y: 0 }));
-  };
+  }, [modules]);
 
   useEffect(() => {
     setPositions(calculatePositions());
     const handleResize = () => setPositions(calculatePositions());
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [calculatePositions]);
 
   useEffect(() => {
     if (selectedModule !== null) {
@@ -64,42 +70,42 @@ export default function Hero() {
       if (modRef) {
         const rect = modRef.getBoundingClientRect();
         setDescPos({
-          top: rect.bottom + window.scrollY + 10,
+          top: rect.bottom + window.scrollY + 8,
           left: rect.left + rect.width / 2 + window.scrollX,
         });
       }
     }
-  }, [selectedModule, showModules]);
+  }, [selectedModule, showModules, modules]);
 
   const handleModuleClick = (module) => {
-    if (selectedModule === module) setSelectedModule(null);
-    else setSelectedModule(module);
+    setSelectedModule((prev) => (prev === module ? null : module));
   };
+
+  const rem = (px) => `${px / 16}rem`;
 
   return (
     <section
       style={{
         width: "100%",
-        maxWidth: "1200px",
+        minHeight: "calc(100vh - 120px)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
-        minHeight: "calc(100vh - 120px)",
+        fontFamily: "Roboto, sans-serif",
         background: "linear-gradient(to bottom, #ffffff, #f5f7fa)",
-        color: "#111",
-        padding: window.innerWidth < 420 ? "40px 10px" : "60px 20px",
+        padding: window.innerWidth < 420 ? rem(40) + " " + rem(10) : rem(60) + " " + rem(20),
         textAlign: "center",
-        fontFamily: "Inter, sans-serif",
+        color: "#111",
         overflow: "visible",
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 5 }}>
-        <h1 style={{ fontSize: "2.5rem", marginBottom: "10px", color: "#1e293b", textAlign: "center" }}>
+        <h1 style={{ fontSize: rem(40), marginBottom: rem(10), color: "#1e293b", textAlign: "center" }}>
           Welcome to Revatix IT Solutions
         </h1>
-        <p style={{ maxWidth: "600px", marginBottom: "30px", fontSize: "1.1rem", color: "#475569", textAlign: "center" }}>
+        <p style={{ maxWidth: rem(600), marginBottom: rem(30), fontSize: rem(18), color: "#475569" }}>
           Empowering businesses with innovation.
         </p>
 
@@ -109,11 +115,11 @@ export default function Hero() {
           style={{
             background: "#ffffff",
             color: "#111",
-            padding: "20px",
-            borderRadius: "12px",
+            padding: rem(20),
+            borderRadius: rem(12),
             boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-            width: window.innerWidth >= 1024 ? "280px" : "90%",
-            maxWidth: "200px",
+            width: window.innerWidth >= 1024 ? rem(280) : "90%",
+            maxWidth: rem(200),
             textAlign: "center",
             zIndex: 10,
           }}
@@ -121,30 +127,30 @@ export default function Hero() {
           <img
             src={productLogo}
             alt="Product"
-            className="product-img"
             style={{
-              width: window.innerWidth >= 1024 ? "80px" : "60px",
-              height: window.innerWidth >= 1024 ? "80px" : "60px",
-              marginBottom: "-20px",
+              width: window.innerWidth >= 1024 ? rem(80) : rem(60),
+              height: window.innerWidth >= 1024 ? rem(80) : rem(60),
+              marginBottom: rem(-20),
             }}
           />
-          <h3 style={{ color: "#1e3a8a", marginBottom: "6px", fontSize: window.innerWidth >= 1024 ? "1.2rem" : "0.9rem" }}>
+          <h3 style={{ color: "#1e3a8a", marginBottom: rem(6), fontSize: window.innerWidth >= 1024 ? rem(19) : rem(14) }}>
             Our Product Showcase
           </h3>
-          <p style={{ fontSize: window.innerWidth >= 1024 ? "0.9rem" : "0.75rem", color: "#475569" }}>
+          <p style={{ fontSize: window.innerWidth >= 1024 ? rem(14) : rem(12), color: "#475569" }}>
             Discover our innovative IT solutions for modern businesses.
           </p>
           <button
             onClick={() => setShowModules(!showModules)}
             style={{
-              marginTop: "12px",
-              padding: "8px 16px",
+              marginTop: rem(12),
+              padding: rem(8) + " " + rem(16),
               border: "none",
-              borderRadius: "6px",
+              borderRadius: rem(6),
               background: "#2563eb",
               color: "#fff",
               fontWeight: 500,
               cursor: "pointer",
+              fontSize: rem(14),
             }}
           >
             Modules
@@ -161,33 +167,54 @@ export default function Hero() {
               onClick={() => handleModuleClick(modules[i])}
               className="module-box"
               style={{
-                position: window.innerWidth >= 1024 ? "absolute" : "static",
+                position: window.innerWidth >= 1024 ? "absolute" : "relative",
                 top: pos.y,
                 left: pos.x,
-                transform: window.innerWidth >= 1024 ? "translate(-50%, -50%) scale(0.5)" : "none",
+                transform: window.innerWidth >= 1024 ? "translate(-50%, -50%) scale(0.45)" : "none",
                 opacity: window.innerWidth >= 1024 ? 0 : 1,
                 background: "#ffffff",
                 border: "1px solid #e2e8f0",
-                padding: "10px 14px",
-                borderRadius: "10px",
+                padding: rem(6) + " " + rem(8),
+                borderRadius: rem(8),
                 textAlign: "center",
                 cursor: "pointer",
                 color: "#1e293b",
-                width: window.innerWidth >= 1024 ? "150px" : "90%",
-                maxWidth: "180px",
-                margin: window.innerWidth >= 1024 ? "0" : "5px auto",
-                transition: window.innerWidth >= 1024 ? `all 0.6s ease ${i * 0.1}s` : "none",
+                width: rem(120),
+                maxWidth: rem(120),
+                margin: window.innerWidth >= 1024 ? 0 : rem(4) + " auto",
                 boxSizing: "border-box",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
+                transition: window.innerWidth >= 1024 ? `all 0.6s ease ${i * 0.1}s` : "none",
+                whiteSpace: "normal",
+                wordBreak: "break-word",
               }}
             >
-              <p style={{ margin: 0, fontWeight: 500 }}>{modules[i]}</p>
+              <p style={{ margin: 0, fontWeight: 500, fontSize: rem(12) }}>{modules[i]}</p>
+
+              {/* Mobile description below each module */}
+              {selectedModule === modules[i] && window.innerWidth < 1024 && (
+                <div
+                  style={{
+                    marginTop: rem(6),
+                    background: "#ffffff",
+                    padding: rem(8) + " " + rem(10),
+                    borderRadius: rem(8),
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    fontSize: rem(12),
+                    color: "#334155",
+                    textAlign: "center",
+                  }}
+                >
+                  {descriptions[selectedModule]}
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
 
-      {selectedModule && (
+      {/* Desktop description (absolute) */}
+      {selectedModule && window.innerWidth >= 1024 && (
         <div
           style={{
             position: "absolute",
@@ -195,97 +222,54 @@ export default function Hero() {
             left: descPos.left,
             transform: "translateX(-50%)",
             background: "#ffffff",
-            padding: "12px 14px",
-            borderRadius: "10px",
-            maxWidth: "250px",
+            padding: rem(12) + " " + rem(14),
+            borderRadius: rem(10),
+            maxWidth: rem(250),
             boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
-            fontSize: "0.9rem",
+            fontSize: rem(13),
             color: "#334155",
+            zIndex: 20,
+            textAlign: "center",
           }}
         >
           {descriptions[selectedModule]}
         </div>
       )}
 
-<style>{`
-  .module-box {
-    opacity: 1 !important;
-    transform: translate(-50%, -50%) scale(1) !important;
-    transition: all 0.3s ease-in-out;
-  }
-  .module-box:hover {
-    background: #2563eb !important;
-    color: #fff !important;
-    transform: translate(-50%, -50%) scale(1.05) !important;
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3) !important;
-  }
-  .module-description {
-    background: #f9fafb;
-    border-left: 4px solid #2563eb;
-    margin-top: 5px;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-  }
+      <style>{`
+        .module-box {
+          opacity: 1 !important;
+          transform: translate(-50%, -50%) scale(1) !important;
+          transition: all 0.3s ease-in-out;
+        }
+        .module-box:hover {
+          background: #2563eb !important;
+          color: #fff !important;
+          transform: translate(-50%, -50%) scale(1.05) !important;
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3) !important;
+        }
 
-  @media (max-width: 1023px) {
-    h1 { font-size: 1.5rem !important; text-align: center; }
-    p { font-size: 0.9rem !important; text-align: center; }
-    .product-card { width: 90% !important; max-width: 200px; padding: 12px !important; margin: 0 auto; }
-    .product-card h3 { font-size: 0.9rem !important; margin: 5px 0 !important; }
-    .product-card p { font-size: 0.75rem !important; margin: 5px 0 !important; }
-    .product-img { width: 60px !important; height: 60px !important; margin-bottom: -10px !important; }
-
-    /* Modules container: vertical column at bottom */
-    .modules-container {
-      display: flex;
-      flex-direction: column; 
-      justify-content: flex-start;
-      align-items: center; 
-      padding: 0 5%; /* <-- prevent overflow on sides */
-      position: static !important;
-      width: 100%;
-      box-sizing: border-box;
-      margin: 20px 0 0 0;
-    }
-
-    .module-box {
-      width: 100%; /* take full container width */
-      max-width: 350px; /* prevent being too wide */
-      margin: 5px 0; 
-      font-size: 0.75rem !important;
-      background: #fff !important;
-      border: 1px solid #e2e8f0 !important;
-      box-sizing: border-box;
-      transform: none !important;
-      position: static !important;
-    }
-
-    .module-box:hover { 
-      transform: none !important; 
-      background: #2563eb !important; 
-      color: #fff !important; 
-    }
-
-    .module-description { font-size: 0.75rem !important; }
-  }
-
-  @media (min-width: 1024px) {
-    .module-box { 
-      opacity: 1 !important; 
-      transform: translate(-50%, -50%) scale(1) !important; 
-      transition: all 0.3s ease-in-out; 
-    }
-    .module-box:hover { 
-      background: #2563eb !important; 
-      color: #fff !important; 
-      transform: translate(-50%, -50%) scale(1.05) !important; 
-      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3) !important; 
-    }
-  }
-`}</style>
-
-      
+        @media (max-width: 1023px) {
+          .modules-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 5%;
+            position: static !important;
+            width: 100%;
+            margin-top: ${rem(10)};
+          }
+          .module-box {
+            width: ${rem(120)} !important;
+            max-width: ${rem(120)} !important;
+            margin: ${rem(4)} 0 !important;
+            font-size: ${rem(12)} !important;
+            position: relative !important;
+            transform: none !important;
+          }
+          .module-box:hover { transform: none !important; }
+        }
+      `}</style>
     </section>
   );
 }

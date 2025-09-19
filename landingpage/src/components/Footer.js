@@ -1,4 +1,4 @@
-import { Linkedin, Facebook, Instagram, Twitter, Phone } from "lucide-react";
+import { Linkedin, Facebook, Instagram, Twitter, Phone } from "lucide-react"; 
 
 export default function Footer() {
   return (
@@ -7,47 +7,48 @@ export default function Footer() {
         footer {
           background: #111827;
           color: #9ca3af;
-          padding: 60px 20px 30px 20px;
+          padding: 40px 20px 15px 20px;
           font-family: 'Inter', sans-serif;
         }
 
         .footer-container {
           display: flex;
           flex-wrap: wrap;
-          justify-content: space-between;
+          justify-content: center;
           max-width: 1200px;
           margin: auto;
-          gap: 40px;
+          gap: 12px; /* slightly more space between columns */
         }
 
         .footer-column {
           flex: 1 1 250px;
           min-width: 220px;
+          margin-bottom: 10px;
         }
 
         .footer-column h2,
         .footer-column h3 {
           color: #fff;
-          margin-bottom: 15px;
+          margin-bottom: 6px;
         }
 
         .footer-column p {
           color: #d1d5db;
-          line-height: 1.6;
-          margin: 5px 0;
-          font-size: 0.95rem;
+          line-height: 1.3;
+          margin: 2px 0;
+          font-size: 0.9rem;
         }
 
         .social-icons {
           display: flex;
-          gap: 12px;
-          margin-top: 12px;
+          gap: 6px;
+          margin-top: 4px;
           flex-wrap: wrap;
         }
 
         .social-icons a {
-          width: 38px;
-          height: 38px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           background: #1f2937;
           display: flex;
@@ -64,51 +65,45 @@ export default function Footer() {
         .social-icons a.phone:hover { background: #22c55e; }
 
         .footer-bottom {
-          margin-top: 40px;
+          margin-top: 15px;
           border-top: 1px solid #374151;
-          padding-top: 20px;
-          font-size: 0.85rem;
+          padding-top: 10px;
+          font-size: 0.75rem;
           color: #6b7280;
           text-align: center;
         }
 
-        /* Large Tablets / iPad */
-        @media (max-width: 1024px) {
-          .footer-container {
-            gap: 30px;
-          }
-          .footer-column p { font-size: 0.9rem; }
-          .social-icons a { width: 36px; height: 36px; }
-        }
-
-        /* Tablets and iPads */
+        /* Tablets */
         @media (max-width: 768px) {
           .footer-container {
             flex-direction: column;
             align-items: center;
             text-align: center;
+            gap: 8px; /* slightly more breathing space */
           }
           .footer-column {
             min-width: 100%;
           }
-          .footer-column p { font-size: 0.88rem; }
-          .social-icons {
-            justify-content: center;
-            gap: 10px;
-          }
-          .social-icons a { width: 34px; height: 34px; }
+          .footer-column p { font-size: 0.85rem; line-height: 1.2; margin: 2px 0; }
+          .social-icons { justify-content: center; gap: 4px; margin-top: 2px; }
+          .social-icons a { width: 28px; height: 28px; }
+          .footer-bottom { margin-top: 5px; font-size: 0.7rem; }
         }
 
         /* Mobile */
         @media (max-width: 480px) {
-          footer {
-            padding: 40px 15px 20px 15px;
+          footer { padding: 20px 0px 0px 1px; }
+          .footer-container {
+            flex-direction: column;
+            align-items: center;
+            gap: 0px; /* small gap */
           }
-          .footer-column h2 { font-size: 1.2rem; }
-          .footer-column h3 { font-size: 1rem; }
-          .footer-column p { font-size: 0.8rem; }
-          .social-icons a { width: 32px; height: 32px; }
-          .footer-bottom { font-size: 0.75rem; }
+          .footer-column { padding: 1px 0; }
+          .footer-column h2 { font-size: 1.1rem; margin-bottom: 2px; }
+          .footer-column h3 { font-size: 1rem; margin-bottom: 1px; }
+          .footer-column p { font-size: 0.78rem; line-height: 1.1; margin: 1px 0; }
+          .social-icons a { width: 26px; height: 26px; }
+          .footer-bottom { font-size: 0.65rem; margin-top: 3px; }
         }
       `}</style>
 
@@ -116,10 +111,8 @@ export default function Footer() {
         {/* Company Info */}
         <div className="footer-column">
           <h2>Revatix IT Solutions</h2>
-          <p>
-            Innovative IT solutions provider delivering cutting-edge products and services.
-            Helping businesses scale efficiently with technology.
-          </p>
+          <p>Innovative IT solutions provider delivering cutting-edge products and services.</p>
+          <p>Helping businesses scale efficiently with technology.</p>
         </div>
 
         {/* About Us */}
@@ -146,7 +139,7 @@ export default function Footer() {
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="linkedin">
               <Linkedin size={20} color="white" />
             </a>
-            <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="phone">
+            <a href="https://wa.me/+919925132277" target="_blank" rel="noopener noreferrer" className="phone">
               <Phone size={20} color="white" />
             </a>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="instagram">
@@ -162,8 +155,3 @@ export default function Footer() {
     </footer>
   );
 }
-
-
-
-
-
