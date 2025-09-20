@@ -126,12 +126,12 @@ export default function Footer() {
           <p>Helping businesses scale efficiently with technology.</p>
         </div>
 
-        {/* About Us */}
+        {/* About Us with CRM & ERP mention */}
         <div className="footer-column">
           <h3>About Us</h3>
-          <p>Revatix Solutions is a leading provider of innovative IT services.</p>
-          <p>We specialize in enterprise software development.</p>
-          <p>Our mission is to empower businesses with cutting-edge technology.</p>
+          <p>Revatix IT Solutions is a parent company delivering innovative IT services.</p>
+          <p>We offer products focused on CRM and ERP systems.</p>
+          <p>Our goal: empower businesses with technology that streamlines operations and boosts productivity.</p>
         </div>
 
         {/* Contact Info & Social */}
@@ -165,4 +165,4 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+} 
