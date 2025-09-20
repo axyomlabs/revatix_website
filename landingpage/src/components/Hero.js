@@ -85,22 +85,23 @@ export default function Hero() {
 
   return (
     <section
-      style={{
-        width: "100%",
-        minHeight: "calc(100vh - 120px)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-        fontFamily: "Roboto, sans-serif",
-        background: "linear-gradient(to bottom, #ffffff, #f5f7fa)",
-        padding: window.innerWidth < 420 ? rem(40) + " " + rem(10) : rem(60) + " " + rem(20),
-        textAlign: "center",
-        color: "#111",
-        overflow: "visible",
-      }}
-    >
+  style={{
+    width: "100%",
+    minHeight: "calc(100vh - 120px)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    fontFamily: "Roboto, sans-serif",
+    background: "linear-gradient(to bottom, #ffffff, #f5f7fa)",
+    padding: window.innerWidth < 420 ? rem(40) + " " + rem(10) : rem(60) + " " + rem(20),
+    textAlign: "center",
+    color: "#111",
+    overflow: "visible",
+    transform: window.innerWidth < 1024 ? "translateX(-4%)" : "none", // 🔹 shift slightly left for small screens
+  }}
+>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 5 }}>
         <h1 style={{ fontSize: rem(40), marginBottom: rem(10), color: "#1e293b", textAlign: "center" }}>
           Welcome to Revatix IT Solutions
@@ -250,25 +251,27 @@ export default function Hero() {
         }
 
         @media (max-width: 1023px) {
-          .modules-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 5%;
-            position: static !important;
-            width: 100%;
-            margin-top: ${rem(10)};
-          }
-          .module-box {
-            width: ${rem(120)} !important;
-            max-width: ${rem(120)} !important;
-            margin: ${rem(4)} 0 !important;
-            font-size: ${rem(12)} !important;
-            position: relative !important;
-            transform: none !important;
-          }
-          .module-box:hover { transform: none !important; }
-        }
+  .modules-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 5%;
+    position: static !important;
+    width: 100%;
+    margin-top: ${rem(10)};
+    transform: translateX(1.5%); /* 🔹 slightly right on mobile/tablet */
+  }
+  .module-box {
+    width: ${rem(120)} !important;
+    max-width: ${rem(120)} !important;
+    margin: ${rem(4)} 0 !important;
+    font-size: ${rem(12)} !important;
+    position: relative !important;
+    transform: none !important;
+  }
+  .module-box:hover { transform: none !important; }
+}
+
       `}</style>
     </section>
   );
